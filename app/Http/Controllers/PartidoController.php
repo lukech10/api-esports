@@ -15,7 +15,7 @@ class PartidoController extends Controller
 {
     //
 
-    public function createPartido(Request $request)
+      public function createPartido(Request $request)
     {
 
         $response = "";
@@ -30,7 +30,7 @@ class PartidoController extends Controller
             $partido = new Partido();
             $equipo1 = Equipo::where('nombre', $data->equipo1)->get()->first();
             $equipo2 = Equipo::where('nombre', $data->equipo2)->get()->first();
-            
+
             if($equipo1->liga_id == $equipo2->liga_id){
 
 
@@ -50,10 +50,10 @@ class PartidoController extends Controller
             }else{
                 $response = "Error, equipos de ligas distintas";
             }
-        }    
+        }
         return response($response);
     }
-    public function updatePartido(Request $request){
+     public function updatePartido(Request $request){
 
         $response = "";
         // Data for training classifier
@@ -72,8 +72,7 @@ class PartidoController extends Controller
         //Buscar el partido por su id
             $equipo1 = Equipo::where('nombre', $data->equipo1)->get()->first();
             $equipo2 = Equipo::where('nombre', $data->equipo2)->get()->first();
-            $partido = Partido::where('fecha', $data->fecha)->where('equipo1_id', $equipo1->id)->where('equipo2_id', $equipo2->id)->get()->first();
-            if($partido->resultadoEquipo1 || $partido->resultadoEquipo2 !== null){
+            $partido = Partido::where('fecha', $data->fecha)->where('equipo1_id', $equipo1->id)->where('equipo2_id',>            if($partido->resultadoEquipo1 || $partido->resultadoEquipo2 !== null){
                 $response = "el partido ya tiene un resultado";
 
             }else{
@@ -117,10 +116,42 @@ class PartidoController extends Controller
     return response($response);
 }
 
-public function listaPartidos (){
+public function listaPartidosLec (){
 
     $response = "";
-    $partidos = Partido::orderBy('liga_id')->orderBy('fecha')->orderBy('hora')->get();
+    $partidos = Partido::where('liga_id', 3)->orderBy('fecha')->orderBy('hora')->get();
+
+
+    $response= [];
+
+    foreach ($partidos as $partido) {
+
+        $equipo1 = Equipo::find($partido->equipo1_id);
+        $equipo2 = Equipo::find($partido->equipo2_id);
+        $liga = Liga::find($equipo1->liga_id);
+
+        $response[] = [
+            "nombreEquipo1" => $equipo1->nombre,
+            "nombreEquipo2" => $equipo2->nombre,
+            "imagenEquipo1" => $equipo1->imagen,
+            "imagenEquipo2" => $equipo2->imagen,
+            "nombreLiga" => $liga->nombre,
+            "imagenLiga" => $liga->imagen,
+            "fecha" => $partido->fecha,
+            "hora" => $partido->hora,
+            "resultadoEquipo1"=> $partido->resultadoEquipo1,
+            "resultadoEquipo2"=> $partido->resultadoEquipo2,
+
+        ];
+    }
+
+    return response()->json($response);
+
+}
+public function listaPartidosLcs (){
+
+    $response = "";
+    $partidos = Partido::where('liga_id', 4)->orderBy('fecha')->orderBy('hora')->get();
 
 
     $response= [];
@@ -165,10 +196,9 @@ public function proximoPartido (){
     date_default_timezone_set("Europe/Madrid");
         //echo "The time is " . date("Y-m-d h:i");
     $fecha = date("Y-m-d");
-    $hora = date("h:i"); 
+    $hora = date("h:i");
         //Buscamos todos los partidos en los que participa el equipo asignado al usuario
-    $partidos = Partido::where('equipo2_id', $equipo_id)->orWhere('equipo1_id', $equipo_id)->orderBy('fecha')->orderBy('hora')->get();
-        //var_dump($partidos); exit();
+    $partidos = Partido::where('equipo2_id', $equipo_id)->orWhere('equipo1_id', $equipo_id)->orderBy('fecha')->order>        //var_dump($partidos); exit();
 
     foreach ($partidos as $partido) {
       $fechaPartido = $partido->fecha;
@@ -176,7 +206,7 @@ public function proximoPartido (){
         $proximosPartidos [] = $partido;
             //var_dump($proximosPartidos[0]); exit();
     }
-} 
+}
 $equipo1 = Equipo::find($proximosPartidos[0]->equipo1_id);
 $equipo2 = Equipo::find($proximosPartidos[0]->equipo2_id);
 $liga = Liga::find($equipo1->liga_id);
@@ -192,27 +222,25 @@ $response = [
 ];
 return response()->json($response);
 }
-
 public function partidosEquipo (){
     $response = [];
     $getHeaders = apache_request_headers ();
     $token = $getHeaders['Authorization'];
     $key = "kjsfdgiueqrbq39h9ht398erubvfubudfivlebruqergubi";
-    
+
     $decoded = JWT::decode($token, $key, array('HS256'));
-    
+
     $user = User::where('nombre', $decoded)->get()->first();
     $equipo_id = $user->equipo_id;
 
-    
+
     date_default_timezone_set("Europe/Madrid");
         //echo "The time is " . date("Y-m-d h:i");
     $fecha = date("Y-m-d");
-    $hora = date("h:i"); 
+    $hora = date("h:i");
         //Buscamos todos los partidos en los que participa el equipo asignado al usuario
-    $partidos = Partido::where('equipo2_id', $equipo_id)->orWhere('equipo1_id', $equipo_id)->orderBy('fecha')->orderBy('hora')->get();
-        //var_dump($partidos); exit();
-    
+    $partidos = Partido::where('equipo2_id', $equipo_id)->orWhere('equipo1_id', $equipo_id)->orderBy('fecha')->order>        //var_dump($partidos); exit();
+
     foreach ($partidos as $partido) {
      $equipo1 = Equipo::find($partido->equipo1_id);
      $equipo2 = Equipo::find($partido->equipo2_id);
@@ -229,7 +257,7 @@ public function partidosEquipo (){
         "resultadoEquipo1" => $partido->resultadoEquipo1,
         "resultadoEquipo2" => $partido->resultadoEquipo2,
     ];
-} 
+}
 
 
 return response()->json($response);
@@ -251,10 +279,9 @@ public function ultimoPartido (){
     date_default_timezone_set("Europe/Madrid");
         //echo "The time is " . date("Y-m-d h:i");
     $fecha = date("Y-m-d");
-    $hora = date("h:i"); 
+    $hora = date("h:i");
         //Buscamos todos los partidos en los que participa el equipo asignado al usuario
-    $partidos = Partido::where('equipo2_id', $equipo_id)->orWhere('equipo1_id', $equipo_id)->orderBy('fecha', 'desc')->orderBy('hora')->get();
-        //var_dump($partidos); exit();
+    $partidos = Partido::where('equipo2_id', $equipo_id)->orWhere('equipo1_id', $equipo_id)->orderBy('fecha', 'desc'>        //var_dump($partidos); exit();
 
     foreach ($partidos as $partido) {
       $fechaPartido = $partido->fecha;
@@ -262,10 +289,14 @@ public function ultimoPartido (){
         $proximosPartidos [] = $partido;
             //var_dump($proximosPartidos[0]); exit();
     }
-} 
+}
 $equipo1 = Equipo::find($proximosPartidos[0]->equipo1_id);
 $equipo2 = Equipo::find($proximosPartidos[0]->equipo2_id);
 $liga = Liga::find($equipo1->liga_id);
+$resultado2in = $proximosPartidos[0]->resultadoEquipo2;
+$resultado2 = "$resultado2in";
+$resultado1in = $proximosPartidos[0]->resultadoEquipo1;
+$resultado1 = "$resultado1in";
 $response = [
     "nombreEquipo1" => $equipo1->nombre,
     "nombreEquipo2" => $equipo2->nombre,
@@ -275,17 +306,41 @@ $response = [
     "imagenLiga" => $liga->imagen,
     "fecha" => $proximosPartidos[0]->fecha,
     "hora" => $proximosPartidos[0]->hora,
-    "resultadoEquipo1" => $proximosPartidos [0]->resultadoEquipo1,
-    "resultadoEquipo2" => $proximosPartidos [0]->resultadoEquipo2,
+    "resultadoEquipo1" => $resultado1,
+    "resultadoEquipo2" => $resultado2,
 ];
 return response()->json($response);
 }
 
-public function clasificatoria (){
+public function clasificatoriaLec (){
 
  $response= [];
         //Buscamos todos los equipo y se ordenan por liga y victorias
- $equipos = Equipo::orderBy('liga_id')->orderBy('victorias', 'desc')->get();
+ $equipos = Equipo::where('liga_id', 3)->orderBy('victorias', 'desc')->get();
+        //var_dump($partidos); exit();
+        //var_dump($equipos);exit();
+
+ foreach ($equipos as $equipo) {
+    $liga = Liga::find($equipo->liga_id);
+    $response[]= [
+        "nombre" => $equipo->nombre,
+        "imagen" => $equipo->imagen,
+        "nombreLiga" => $liga->nombre,
+        "imagenLiga" => $liga->imagen,
+        "victorias"=>$equipo->victorias,
+        "derrotas"=>$equipo->derrotas,
+    ];
+
+}
+return response()->json($response);
+
+
+}
+public function clasificatoriaLcs (){
+
+ $response= [];
+        //Buscamos todos los equipo y se ordenan por liga y victorias
+ $equipos = Equipo::where('liga_id', 4)->orderBy('victorias', 'desc')->get();
         //var_dump($partidos); exit();
         //var_dump($equipos);exit();
 

@@ -17,7 +17,7 @@ class EquipoController extends Controller
 
     public function createEquipo(Request $request)
     {
-        
+
         $response = "";
         //Leer el contenido de la petición
         $data = $request->getContent();
@@ -35,18 +35,18 @@ class EquipoController extends Controller
             $equipo->liga_id = $data->liga_id;
             $equipo->victorias = $data->victorias;
             $equipo->derrotas = $data->derrotas;
-            
+
             try{
                 $equipo->save();
                 $response = "OK";
             }catch(\Exception $e){
                 $response = $e->getMessage();
             }
-        }    
+        }
         return response($response);
     }
 
-    public function listaEquipos(Request $request)
+   public function listaEquipos(Request $request)
     {
 
         $response = "";
@@ -55,8 +55,8 @@ class EquipoController extends Controller
         $data = json_decode($data);
 
         $equipos = Equipo::get();
-        
-        
+
+
             $response= [];
 
             foreach ($equipos as $equipo) {
@@ -64,15 +64,15 @@ class EquipoController extends Controller
                $equipo = Equipo::where('liga_id', $data->liga_id)->get();
                var_dump($equipo); exit();
 
-               for ($i=0; $i < count($equipo) ; $i++) { 
+               for ($i=0; $i < count($equipo) ; $i++) {
                    $response[$i] = [
                     "id" => $equipo[$i]->id,
                     "imagen" => $equipo[$i]->imagen,
                ];
                }
-              
+
             }
-        
+
          return response()->json($response);
 
     }
@@ -83,7 +83,7 @@ class EquipoController extends Controller
         $getHeaders = apache_request_headers ();
         $token = $getHeaders['Authorization'];
         $key = "kjsfdgiueqrbq39h9ht398erubvfubudfivlebruqergubi";
-        
+
             $decoded = JWT::decode($token, $key, array('HS256'));
         //Leer el contenido de la petición
         $data = $request->getContent();
@@ -103,9 +103,9 @@ class EquipoController extends Controller
                 $response = $e->getMessage();
             }
         }else{
-            $response = "equipo no encontrado"; 
+            $response = "equipo no encontrado";
         }
-        } 
+        }
          return response($response);
     }
   

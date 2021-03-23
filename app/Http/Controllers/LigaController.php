@@ -14,9 +14,10 @@ class LigaController extends Controller
 {
     //
 
+   
     public function createLiga(Request $request)
     {
-        
+
         $response = "";
         //Leer el contenido de la petición
         $data = $request->getContent();
@@ -29,12 +30,12 @@ class LigaController extends Controller
             $liga = new Liga();
 
             //TODO: Validar los data antes de guardar el liga
-            
+
             $liga->nombre = $data->nombre;
             $liga->imagen = $data->imagen;
-            
 
-            
+
+
             try{
                 $liga->save();
                 $response = "OK";
@@ -42,14 +43,14 @@ class LigaController extends Controller
                 $response = $e->getMessage();
             }
 
-            
+
         }
 
-        
+
         return response($response);
     }
 
-    public function listaLigas(){
+   public function listaLigas(){
 
         $response = "";
         $ligas = Liga::get();
@@ -58,13 +59,13 @@ class LigaController extends Controller
 
         foreach ($ligas as $liga) {
             $response[] = [
-                
+
                 "id" => $liga->id,
                 "url" => $liga->imagen
-                
+
             ];
         }
-        
+
 
 
         return response()->json($response);

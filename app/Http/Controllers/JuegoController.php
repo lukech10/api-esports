@@ -14,9 +14,9 @@ class JuegoController extends Controller
 {
     //
 
-    public function createJuego(Request $request)
+   public function createJuego(Request $request)
     {
-        
+
         $response = "";
         //Leer el contenido de la petición
         $data = $request->getContent();
@@ -29,12 +29,12 @@ class JuegoController extends Controller
             $Juego = new Juego();
 
             //TODO: Validar los data antes de guardar el Juego
-            
+
             $Juego->nombre = $data->nombre;
             $Juego->imagen = $data->imagen;
-            
 
-            
+
+
             try{
                 $Juego->save();
                 $response = "OK";
@@ -42,10 +42,10 @@ class JuegoController extends Controller
                 $response = $e->getMessage();
             }
 
-            
+
         }
 
-        
+
         return response($response);
     }
 
@@ -58,12 +58,12 @@ class JuegoController extends Controller
 
         foreach ($juegos as $juego) {
             $response[] = [
-                
+
                 "url" => $juego->imagen
-                
+
             ];
         }
-        
+
 
 
         return response()->json($response);
